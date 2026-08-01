@@ -1,0 +1,24 @@
+{
+  "LSTM": {
+    "test_NSE_median": 0.23930437677394711,
+    "test_NSE_extreme_median": 0.06416653741276046,
+    "test_KGE_median": 0.4042957213854862,
+    "test_PBIAS_median": 33.968374476702344,
+    "test_Beta_NSE_median": 1.339683741267431,
+    "test_Alpha_NSE_median": 0.7754974236659572,
+    "test_FHV_median": 1.5220377590251766,
+    "best_val_NSE_median": 0.4176725302672655,
+    "best_epoch": 2
+  },
+  "PINN_UHConv": {
+    "test_NSE_median": 0.30703421687399934,
+    "test_NSE_extreme_median": -0.3284610475751557,
+    "test_KGE_median": 0.2348335434167812,
+    "test_PBIAS_median": -28.24878327847873,
+    "test_Beta_NSE_median": 0.7175121616527173,
+    "test_Alpha_NSE_median": 0.5380965112984106,
+    "test_FHV_median": -28.176616677550328,
+    "best_val_NSE_median": 0.4437984964384474,
+    "best_epoch": 2
+  }
+}

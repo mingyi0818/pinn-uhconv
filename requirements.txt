@@ -1,0 +1,21 @@
+# PINN-UHConv: Physics-Informed Neural Network with Differentiable Unit-Hydrograph Convolution
+# Python 3.13 | CUDA 13.2 | Tested on Windows 11 Pro, RTX 2000 Pro (16 GB), Xeon W7-2595X, 48 GB DDR5
+
+# Core deep learning
+torch==2.12.0+cu132
+numpy==2.4.6
+pandas==3.0.3
+scipy==1.17.1
+
+# Visualization
+matplotlib==3.10.9
+seaborn==0.13.2
+
+# Utilities
+scikit-learn==1.9.0
+tqdm==4.68.4
+
+# Install torch with CUDA support:
+#   pip install torch==2.12.0 --index-url https://download.pytorch.org/whl/cu132
+# For CPU-only:
+#   pip install torch==2.12.0
