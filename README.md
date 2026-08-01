@@ -19,7 +19,10 @@ PINN-UHConv achieves the **highest correlation**, **best volume calibration**, a
 # 1. Install dependencies
 pip install -r requirements.txt
 
-# 2. Download CAMELS-US data
+# 2. Download CAMELS-US data (requires Kaggle token)
+#    Get your token from https://www.kaggle.com/settings
+#    On Windows:  set KAGGLE_API_TOKEN=<your_token>
+#    On Linux:    export KAGGLE_API_TOKEN=<your_token>
 cd src
 python kaggle_download_hydromtl.py
 
@@ -29,7 +32,7 @@ python run_experiments.py --models PINN_UHConv --seeds 42 --n_basins 100 --epoch
 # 4. Full reproduction (see reproduce.md for details)
 python run_experiments.py    # Experiment 1
 python run_ablation.py       # Experiment 2
-python run_sensitivity.py    # Experiment 3
+python run_sensitivity.py --n_basins 100 --epochs 15 --seed 42 --batch_size 256 --seq_length 180  # Experiment 3
 python run_robustness.py     # Experiment 4
 python run_statistics.py     # Statistical analysis
 python generate_plots.py     # Generate figures

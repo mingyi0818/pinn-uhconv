@@ -305,13 +305,56 @@ The ablation pattern is robust to the metric chosen: under KGE, the full model i
 
 ### 3.4 Hyper-parameter Sensitivity
 
-> **[TODO 3.4 — pending Experiment 3 sensitivity results]** Elasticity analysis over $\lambda_{\text{mass}}$, $K$, $H$, $\lambda_{\text{ext}}$, $L$ is being finalised in `results/experiment3_sensitivity_results.json`. The full table of elasticity coefficients and the sensitivity figure will be inserted once the 16-run sweep completes.
+We quantify the sensitivity of PINN-UHConv to its five key hyper-parameters using the elasticity coefficient
+$$E(\theta;\theta_0) \;=\; \frac{\Delta\text{NSE}/\text{NSE}_0}{\Delta\theta/\theta_0} \;=\; \frac{\big(\text{NSE}(\theta)-\text{NSE}(\theta_0)\big)/\text{NSE}(\theta_0)}{(\theta-\theta_0)/\theta_0},$$
+where $\theta_0$ is the default value and $\text{NSE}(\theta_0)=0.4686$ is the baseline median test NSE (seed 42, 15 test basins). Each hyper-parameter is varied in isolation — all others held at the default configuration $(\lambda_{\text{mass}}{=}0.01,\,K{=}60,\,H{=}128,\,\lambda_{\text{ext}}{=}0.5,\,L{=}180)$ — over the 100-basin train / 15-basin test split with seed 42 and 15 training epochs. Sensitivity is graded as low ($|E|<0.2$), medium ($0.2\le|E|<0.5$), or high ($|E|\ge 0.5$). The full 16-run sweep required $702.4$ min ($42\,145$ s) of GPU time; per-value metrics are stored in `results/experiment3_sensitivity_results.json` and visualised in Figure 4.
+
+**Table 4.** Parameter sensitivity summary: elasticity of median test NSE with respect to each hyper-parameter. "Best" reports the value yielding the highest NSE; $\max|E|$ is the largest absolute elasticity observed across the swept range.
+
+| Parameter | Symbol | Range tested | Default | Best | Best NSE ↑ | $\max|E|$ | Level |
+|-----------|--------|--------------|--------:|-----:|-----------:|----------:|:------|
+| Mass-balance weight | $\lambda_{\text{mass}}$ | {0, 0.01, 0.1, 1.0} | 0.01 | 1.0 | **0.5116** | 0.026 | low |
+| UH kernel size | $K$ | {20, 60, 120} | 60 | 20 | 0.4710 | 0.028 | low |
+| Hidden size | $H$ | {64, 128, 256} | 128 | 128 | 0.4686 | 0.123 | low |
+| Extreme-event weight | $\lambda_{\text{ext}}$ | {0, 0.5, 2.0} | 0.5 | 0.0 | 0.4843 | 0.033 | low |
+| Look-back length | $L$ | {90, 180, 365} | 180 | 180 | 0.4686 | 0.211 | **medium** |
+
+**Table 5.** Per-value metrics for the sensitivity sweep. Each row reports test-set NSE median, NSE_extreme median, KGE median, and the elasticity $E$ relative to the default value (marked "baseline").
+
+| Parameter | Value | NSE ↑ | NSE_extreme ↑ | KGE ↑ | $E$ | Level |
+|-----------|------:|------:|--------------:|------:|----:|:------|
+| $\lambda_{\text{mass}}$ | 0.0 | 0.4564 | 0.1571 | 0.5127 | 0.026 | low |
+| $\lambda_{\text{mass}}$ | 0.01 | 0.4686 | 0.1329 | 0.3612 | 0.000 | baseline |
+| $\lambda_{\text{mass}}$ | 0.1 | 0.4531 | 0.1001 | 0.4788 | −0.004 | low |
+| $\lambda_{\text{mass}}$ | 1.0 | **0.5116** | 0.1494 | 0.5385 | 0.001 | low |
+| $K$ | 20 | **0.4710** | 0.1713 | 0.4420 | −0.008 | low |
+| $K$ | 60 | 0.4686 | 0.1329 | 0.3612 | 0.000 | baseline |
+| $K$ | 120 | 0.4554 | 0.0295 | 0.4282 | −0.028 | low |
+| $H$ | 64 | 0.4564 | 0.0108 | 0.3460 | 0.052 | low |
+| $H$ | 128 | **0.4686** | 0.1329 | 0.3612 | 0.000 | baseline |
+| $H$ | 256 | 0.4110 | 0.0928 | 0.3551 | −0.123 | low |
+| $\lambda_{\text{ext}}$ | 0.0 | **0.4843** | 0.1345 | 0.4693 | −0.034 | low |
+| $\lambda_{\text{ext}}$ | 0.5 | 0.4686 | 0.1329 | 0.3612 | 0.000 | baseline |
+| $\lambda_{\text{ext}}$ | 2.0 | 0.4693 | 0.1074 | 0.3187 | 0.000 | low |
+| $L$ | 90 | 0.4192 | 0.1185 | 0.3573 | 0.211 | medium |
+| $L$ | 180 | **0.4686** | 0.1329 | 0.3612 | 0.000 | baseline |
+| $L$ | 365 | 0.4607 | 0.0430 | 0.5313 | −0.016 | low |
+
+The response surface is notably flat: four of the five hyper-parameters exhibit low sensitivity ($\max|E|\le 0.123$), and only the look-back length $L$ enters the medium band ($|E|=0.211$ when shortened from 180 to 90 days). Three findings deserve emphasis.
+
+(i) **The default configuration is optimal or near-optimal for three of the five parameters.** The default hidden size $H=128$ is the best value (NSE $=0.4686$); both $H=64$ ($-0.0122$ NSE, $E=0.052$) and $H=256$ ($-0.0576$ NSE, $E=-0.123$) degrade performance — the latter by $12.3\,\%$, suggesting that over-parameterised recurrent layers overfit the 100-basin training sample. The default look-back $L=180$ is also optimal: halving it to $L=90$ costs $0.0494$ NSE ($-10.5\,\%$, $E=0.211$, medium), while extending it to a full year ($L=365$) yields only a marginal NSE drop ($-0.0079$) but collapses NSE_extreme (from $0.1329$ to $0.0430$, $-67.6\,\%$), indicating that very long contexts dilute the extreme-flow signal. The UH kernel size $K=60$ is near-optimal: $K=20$ is marginally better ($+0.0024$ NSE, $+0.0384$ NSE_extreme) while $K=120$ is worse ($-0.0132$ NSE, $-77.8\,\%$ NSE_extreme), confirming that a 60-day routing kernel captures the dominant response timescale of most CAMELS basins.
+
+(ii) **Two defaults are sub-optimal, but in opposite directions.** The mass-balance weight $\lambda_{\text{mass}}$ shows the largest absolute NSE upside when moved off default: setting $\lambda_{\text{mass}}=1.0$ (100× the default) lifts NSE from $0.4686$ to $0.5116$ ($+9.2\,\%$), reduces RMSE by $7.0\,\%$ ($1.5045\to 1.3994$), and slashes the high-flow bias FHV from $-21.39$ to $-2.68$ — at the cost of a sign flip in PBIAS ($-9.59\to 13.41$) whose magnitude ($13.41$) is nonetheless comparable to the default's ($9.59$). The low elasticity ($|E|=0.001$) reflects the fact that elasticity is normalised by the *relative* parameter change, and a 100× shift in $\lambda_{\text{mass}}$ produces only a $9\,\%$ NSE change; in absolute terms, however, this is the single largest improvement available in the sweep, suggesting that the default under-weights the physical constraint. Conversely, the extreme-event weight $\lambda_{\text{ext}}$ is *over-weighted* at the default: setting $\lambda_{\text{ext}}=0$ improves NSE from $0.4686$ to $0.4843$ ($+3.4\,\%$) and improves KGE from $0.3612$ to $0.4693$ ($+29.9\,\%$). This is consistent with the ablation finding (Section 3.3) that the extreme weighting is primarily a high-flow specialist — it halves NSE_extreme when removed from the *full* model, but as a free hyper-parameter its default value slightly over-penalises ordinary-flow days.
+
+(iii) **The look-back length is the only medium-sensitivity parameter.** Shortening $L$ from 180 to 90 days produces the largest elasticity in the sweep ($|E|=0.211$) because the relative NSE change ($-10.5\,\%$) is large while the relative parameter change ($-50\,\%$) is moderate. This is hydrologically meaningful: 90 days is shorter than the recession timescale of many catchments, so the LSTM lacks the antecedent-storage context needed to separate baseflow from event-flow. Extending $L$ to 365 days does not help — the extra context is redundant because the UHconv routing kernel already encodes the relevant memory at the *routing* timescale, leaving the LSTM to model only short-term storage dynamics.
+
+Overall, PINN-UHConv is robust to moderate hyper-parameter perturbations: across the 11 non-default (parameter, value) pairs, 8 produce $<5\,\%$ NSE change and only 2 exceed $10\,\%$ degradation (the $H=256$ over-parameterisation and the $L=90$ shortening). The default configuration achieves within $3.4\,\%$ of the per-parameter optimum for four of the five parameters (the exception being $\lambda_{\text{mass}}$, where the default under-performs the best value by $9.2\,\%$), indicating that the architecture is not critically dependent on hyper-parameter tuning — a desirable property for operational deployment.
 
 ### 3.5 Robustness Analysis
 
 We evaluate the operational robustness of the trained PINN-UHConv (seed 42, best validation NSE median = 0.6035) along three axes: (i) **input noise** — additive zero-mean Gaussian noise on the meteorological forcings at standard deviations $\sigma \in \{0, 0.05, 0.10, 0.20, 0.30\}$ of the per-basin normalised inputs; (ii) **missing data** — random dropout of input time-steps at rates $r \in \{0, 0.05, 0.10, 0.20, 0.30\}$ with zero-imputation; (iii) **unseen-basin transfer** — applying the seed-42 model to four held-out basin sets (sizes 3, 6, 4, 7) selected by alternative seeds (2024, 7, 123, 999) that were excluded from training. All robustness results are stored in `results/experiment4_robustness_results.json`.
 
-**Table 5.** Input-noise robustness: NSE median on 15 test basins under additive Gaussian noise on forcings.
+**Table 6.** Input-noise robustness: NSE median on 15 test basins under additive Gaussian noise on forcings.
 
 | Noise $\sigma$ | NSE ↑ | NSE_extreme ↑ | KGE ↑ | Pearson $r$ ↑ | PBIAS →0 | FHV →0 |
 |---------------:|------:|--------------:|------:|--------------:|---------:|-------:|
@@ -323,7 +366,7 @@ We evaluate the operational robustness of the trained PINN-UHConv (seed 42, best
 
 Noise robustness is striking: even at $\sigma=0.30$ (substantial perturbation), NSE degrades by only 3.1 % relative to the clean baseline (0.4389 → 0.4252), and NSE_extreme at $\sigma=0.20$ actually exceeds the clean value (0.1370 vs. 0.0983). The mass-balance loss appears to act as a denoising regulariser: the physical residual pulls predictions toward water-balance closure, damping the effect of input perturbations. PBIAS also migrates toward zero (−14.04 → −7.14) under increasing noise, suggesting that the constraint re-centres the predicted discharge distribution.
 
-**Table 6.** Missing-data robustness: NSE median on 15 test basins under random input time-step dropout.
+**Table 7.** Missing-data robustness: NSE median on 15 test basins under random input time-step dropout.
 
 | Missing rate $r$ | NSE ↑ | NSE_extreme ↑ | KGE ↑ | Pearson $r$ ↑ | PBIAS →0 | FHV →0 |
 |-----------------:|------:|--------------:|------:|--------------:|---------:|-------:|
@@ -335,7 +378,7 @@ Noise robustness is striking: even at $\sigma=0.30$ (substantial perturbation), 
 
 Missing-data robustness degrades more steeply: at $r=0.30$, NSE drops by 28.6 % (0.4389 → 0.3134) and NSE_extreme collapses (0.0983 → −0.3064). This is hydrologically expected — gaps in the precipitation record break the rainfall-to-runoff coupling that drives the UHconv response, whereas additive noise preserves the temporal structure. Notably, NSE at $r=0.05$ (0.4607) is *higher* than the clean baseline (0.4389), consistent with a mild regularisation effect analogous to dropout. Pearson $r$ remains above 0.68 even at $r=0.30$, indicating that the model retains the *timing* of the hydrograph even when magnitude calibration suffers.
 
-**Table 7.** Unseen-basin transfer: applying the seed-42 model (trained on 70 basins) to four held-out basin sets selected by alternative seeds.
+**Table 8.** Unseen-basin transfer: applying the seed-42 model (trained on 70 basins) to four held-out basin sets selected by alternative seeds.
 
 | Held-out set | $n$ basins | NSE ↑ | NSE_extreme ↑ | KGE ↑ | Pearson $r$ ↑ | PBIAS →0 | FHV →0 |
 |--------------|-----------:|------:|--------------:|------:|--------------:|---------:|-------:|
@@ -348,9 +391,9 @@ Unseen-basin transfer is strong: median NSE across the four held-out sets ranges
 
 ### 3.6 Computational Performance
 
-Table 4 reports the computational cost of all seven models, measured on the hardware described in Section 3.1. Training time is the wall-clock time from the first to the last epoch (including validation), averaged over 5 seeds. Throughput is computed as (training samples × converged epochs) / training time. Model size is the serialized float32 weight footprint.
+Table 9 reports the computational cost of all seven models, measured on the hardware described in Section 3.1. Training time is the wall-clock time from the first to the last epoch (including validation), averaged over 5 seeds. Throughput is computed as (training samples × converged epochs) / training time. Model size is the serialized float32 weight footprint.
 
-**Table 4.** Computational performance (mean ± std over 5 seeds, batch size 256, sequence length 180).
+**Table 9.** Computational performance (mean ± std over 5 seeds, batch size 256, sequence length 180).
 
 | Model | Params | Model size | Train time (s) | Converged epochs | Throughput (samples/s) |
 |-------|-------:|-----------:|---------------:|-----------------:|-----------------------:|
@@ -370,7 +413,7 @@ Table 4 reports the computational cost of all seven models, measured on the hard
 
 To illustrate the operational behaviour of PINN-UHConv at the basin level, we train both PINN-UHConv and a vanilla LSTM under identical settings (seed 42, 15 epochs, 70 train / 15 val / 15 test basins) and evaluate per-basin predictions on the 15 test basins. All case-study results are stored in `results/case_study_results.json`. Because this is a single-seed run, the absolute NSE values differ slightly from the five-seed medians in Section 3.2 (PINN-UHConv case-study NSE median $= 0.4686$ vs. five-seed median $= 0.506 \pm 0.037$); the relative comparison between the two models is, however, consistent with the main experiment.
 
-**Table 8.** Case-study test-set metrics (15 basins, seed 42, 52 079 test samples).
+**Table 10.** Case-study test-set metrics (15 basins, seed 42, 52 079 test samples).
 
 | Model | NSE$_{\text{med}}$ ↑ | NSE$_{\text{mean}}$ | KGE$_{\text{med}}$ ↑ | Pearson $r_{\text{med}}$ ↑ | $\beta_{\text{NSE,med}}$ →1 | PBIAS$_{\text{med}}$ →0 | FHV$_{\text{med}}$ →0 |
 |-------|------:|------:|------:|------:|------:|------:|------:|
@@ -379,7 +422,7 @@ To illustrate the operational behaviour of PINN-UHConv at the basin level, we tr
 
 At the aggregate level the case study reproduces the trade-off identified in Section 4.2: PINN-UHConv attains a higher Pearson correlation ($0.7672$ vs. $0.7372$), a volume ratio closer to unity ($\beta_{\text{NSE}} = 0.9041$ vs. $0.8133$), and half the PBIAS of the LSTM ($-9.59$ vs. $-18.67$), at a small cost in median NSE ($-0.0257$). The NSE mean tells a starker story: PINN-UHConv's mean ($0.3919$) is $3.7\times$ higher than the LSTM's ($0.1064$), because the LSTM catastrophically fails on two basins (NSE $< -1$) that drag its mean down, whereas PINN-UHConv's mass-balance regulariser prevents such catastrophic failures — the same variance-reduction mechanism documented in the ablation (Section 3.3).
 
-**Table 9.** Representative basins spanning the PINN-UHConv NSE distribution (worst / median / best). Per-basin metrics for both models and the learned UH parameters $(\alpha_b, \beta_b, k^*)$.
+**Table 11.** Representative basins spanning the PINN-UHConv NSE distribution (worst / median / best). Per-basin metrics for both models and the learned UH parameters $(\alpha_b, \beta_b, k^*)$.
 
 | Basin ID | PINN NSE | LSTM NSE | PINN KGE | LSTM KGE | PINN PBIAS | LSTM PBIAS | PINN $r$ | LSTM $r$ | $\alpha_b$ | $\beta_b$ | $k^*$ (d) |
 |----------|---------:|---------:|---------:|---------:|-----------:|-----------:|---------:|---------:|--------:|--------:|--------:|
@@ -429,11 +472,17 @@ The ablation results in Table 3 quantify the marginal contribution of each compo
 
 ### 4.4 Hyper-parameter Sensitivity
 
-> **[TODO 4.4 — pending Experiment 3 sensitivity results]** Section 3.4 will report elasticity coefficients for the five key hyper-parameters ($\lambda_{\text{mass}}$, $K$, $H$, $\lambda_{\text{ext}}$, $L$). We expect $\lambda_{\text{mass}}$ and $K$ to be the most sensitive (because they directly control physical structure), with hidden size $H$ and look-back $L$ showing typical moderate sensitivity. The default values $\lambda_{\text{mass}}=0.01$, $K=60$, $H=128$, $\lambda_{\text{ext}}=0.5$, $L=180$ should sit in a flat region of the response surface, indicating robustness to moderate perturbations.
+The sensitivity analysis (Section 3.4, Tables 4–5) yields three findings that refine the architectural interpretation developed in Sections 4.1–4.3.
+
+**Physical parameters are unexpectedly robust.** Contrary to our a priori expectation that $\lambda_{\text{mass}}$ and $K$ — the parameters that most directly control physical structure — would be the most sensitive, both fall in the low-sensitivity band ($\max|E| \le 0.028$). The mass-balance weight $\lambda_{\text{mass}}$ in particular shows a striking pattern: a 100× increase from $0.01$ to $1.0$ yields the largest *absolute* NSE gain in the sweep ($+0.0430$, $+9.2\,\%$) yet produces a small *elasticity* ($|E| = 0.001$) because the metric is normalised by the relative parameter change. This highlights a known limitation of elasticity: it understates the importance of parameters whose natural range spans orders of magnitude. Read in absolute terms, the $\lambda_{\text{mass}}$ sweep is the most actionable finding of the sensitivity study — it suggests that the published default under-weights the physical constraint, and that operational deployments should favour $\lambda_{\text{mass}} \in [0.1, 1.0]$. The low elasticity of the UH kernel size $K$ ($\max|E| = 0.028$) reflects the fact that the Gamma kernel shape $(\alpha_b, \beta_b)$ is itself *predicted* from static attributes (Section 2.4.1): once the kernel shape adapts to the basin, its length $K$ only needs to be long enough to cover the recession tail, so performance is insensitive to $K \in [60, 120]$ and degrades only $2.8\,\%$ at $K = 120$.
+
+**Capacity and context are the binding constraints.** The two parameters that approach the medium band — hidden size $H$ ($\max|E| = 0.123$) and look-back length $L$ ($\max|E| = 0.211$) — are the two classical capacity/context hyper-parameters of recurrent sequence models. The asymmetric response of $H$ ($64 \to 0.4564$, $128 \to 0.4686$, $256 \to 0.4110$) is informative: undersizing the LSTM starves the UH parameter MLP of representational capacity, while oversizing it causes overfitting on the 100-basin training sample — both regimes degrade NSE. The asymmetric response of $L$ ($90 \to 0.4192$, $180 \to 0.4686$, $365 \to 0.4607$) has a different interpretation: 90 days is below the recession timescale of many CAMELS basins, so the model lacks antecedent-storage context; 365 days is redundant because the UHconv kernel already encodes routing memory, leaving the LSTM to model only short-term storage. The fact that $L = 180$ sits at the operational sweet spot is consistent with hydrological prior work [Kratzert et al., 2018] reporting diminishing returns beyond 180–365 days of look-back.
+
+**Defaults are near-optimal, with two actionable revisions.** The default configuration $(\lambda_{\text{mass}}=0.01,\, K=60,\, H=128,\, \lambda_{\text{ext}}=0.5,\, L=180)$ achieves within $3.4\,\%$ of the per-parameter optimum for four of the five parameters. The two exceptions point to specific revisions for operational deployment: (a) **raise $\lambda_{\text{mass}}$** to $1.0$, which produces a $9.2\,\%$ NSE improvement and a $87\,\%$ reduction in high-flow bias (FHV from $-21.39$ to $-2.68$), at the cost of a positive PBIAS ($+13.41$) that is nonetheless comparable in magnitude to the default's negative PBIAS ($-9.59$); (b) **lower $\lambda_{\text{ext}}$** toward $0$, which produces a $3.4\,\%$ NSE improvement and a $30\,\%$ KGE improvement, suggesting that the extreme-event weighting is most useful as a binary on/off switch rather than a continuously-tuned parameter. Importantly, neither revision moves the architecture into a high-sensitivity regime — even at the revised values, the model remains in the flat region of the response surface, so small missettings around the revised defaults should not degrade performance. This robustness is a direct consequence of the inductive biases discussed in Sections 4.1–4.3: because the routing structure is hard-coded into UHconv and the mass-balance constraint is structurally enforced, the remaining hyper-parameters govern only the *residual* fit and are therefore individually less critical.
 
 ### 4.5 Robustness and Transferability
 
-The robustness results in Tables 5–7 support three operational claims about PINN-UHConv: it is highly resilient to input noise, more sensitive to missing data, and capable of credible transfer to unseen basins. We discuss each axis in turn and link the findings back to the architectural choices.
+The robustness results in Tables 6–8 support three operational claims about PINN-UHConv: it is highly resilient to input noise, more sensitive to missing data, and capable of credible transfer to unseen basins. We discuss each axis in turn and link the findings back to the architectural choices.
 
 **Noise robustness via the mass-balance prior.** The most striking finding is that PINN-UHConv loses only $3.1\,\%$ of NSE under $30\,\%$ Gaussian input noise ($0.4389 \to 0.4252$), and at $20\,\%$ noise NSE_extreme actually *exceeds* the clean baseline ($0.1370$ vs. $0.0983$). We attribute this to the mass-balance loss acting as a denoising regulariser: the physical residual $\dot{S} - (P - \text{ET} - Q)$ pulls predictions toward water-balance closure, providing a physics-informed prior that counteracts random perturbations in the meteorological forcings. The PBIAS migration toward zero under increasing noise ($-14.04 \to -7.14$) is further evidence that the constraint re-centres the predicted discharge distribution, damping the asymmetric bias that noise would otherwise introduce. This confirms the hypothesis that physically constrained models are intrinsically more robust to input perturbations than purely data-driven ones — a property of high operational value, since real-world meteorological forcings are themselves uncertain (e.g., satellite precipitation products routinely exhibit $20\text{–}40\,\%$ error).
 
@@ -459,7 +508,7 @@ We identify five principal limitations of the current formulation.
 
 ### 4.7 Practical Deployment
 
-The computational profile reported in Table 4 supports deployment in operational settings. PINN-UHConv's training time ($2417 \pm 472$ s per seed) is comparable to the vanilla LSTM ($2036 \pm 352$ s) and only $8.3\,\%$ slower than UH-LSTM ($2231 \pm 839$ s), with the gap attributable to disabling mixed-precision training for numerical stability of the mass-balance loss rather than to architectural overhead. At inference, a single forward pass over a 180-day window requires $\approx 23$ MFLOPs — well within real-time constraints on embedded GPUs ($< 5$ ms/sample on the RTX 2000 Pro used in this study). The model footprint is $516$ KB in float32, fitting comfortably on edge devices with 1 GB of memory.
+The computational profile reported in Table 9 supports deployment in operational settings. PINN-UHConv's training time ($2417 \pm 472$ s per seed) is comparable to the vanilla LSTM ($2036 \pm 352$ s) and only $8.3\,\%$ slower than UH-LSTM ($2231 \pm 839$ s), with the gap attributable to disabling mixed-precision training for numerical stability of the mass-balance loss rather than to architectural overhead. At inference, a single forward pass over a 180-day window requires $\approx 23$ MFLOPs — well within real-time constraints on embedded GPUs ($< 5$ ms/sample on the RTX 2000 Pro used in this study). The model footprint is $516$ KB in float32, fitting comfortably on edge devices with 1 GB of memory.
 
 For operational deployment in a flood-forecasting context, we recommend the following pipeline: (i) pre-train PINN-UHConv on a large sample of gauged basins (e.g., the full CAMELS-US set); (ii) fine-tune the static-attribute encoder $g_\phi$ and the UH parameter MLP on the target region using a small number of local basins; (iii) issue ensemble predictions by running the model with multiple random seeds and reporting the ensemble mean and $90\,\%$ prediction interval. The training cost of $\approx 40$ minutes per seed on a workstation-class GPU makes this pipeline feasible on regional water-authority hardware.
 
@@ -487,9 +536,9 @@ Empirically, on 100 CAMELS-US basins with 5 random seeds, PINN-UHConv achieves a
 
 The ablation study (Section 3.3, Table 3) quantifies each component's marginal contribution: UHconv is the single most important component for routing accuracy ($-14.8\,\%$ NSE when removed), the mass-balance constraint acts as a variance regulariser that halves cross-seed NSE standard deviation ($0.0490$ vs. $0.1023$ without it) while marginally improving mean NSE, the FiLM static-modulation gate contributes $8.9\,\%$ of NSE and is essential for regionalisation, and the extreme-event weighting carries $48.8\,\%$ of NSE_extreme skill — confirming that all four components are complementary and necessary.
 
-The robustness analysis (Section 3.5, Tables 5–7) demonstrates that PINN-UHConv degrades gracefully under realistic operational stress: NSE drops only $3.1\,\%$ under $30\,\%$ Gaussian input noise, retains useful skill up to $10\,\%$ missing-data rate, and transfers to unseen basins with median NSE between $0.4650$ and $0.6750$ across four held-out basin sets — three of the four exceeding the in-distribution test NSE. These results support the claim that physically constrained deep learning models are intrinsically more robust to input perturbations than purely data-driven ones, a property of high operational value for flood forecasting in data-sparse or noisy environments.
+The robustness analysis (Section 3.5, Tables 6–8) demonstrates that PINN-UHConv degrades gracefully under realistic operational stress: NSE drops only $3.1\,\%$ under $30\,\%$ Gaussian input noise, retains useful skill up to $10\,\%$ missing-data rate, and transfers to unseen basins with median NSE between $0.4650$ and $0.6750$ across four held-out basin sets — three of the four exceeding the in-distribution test NSE. These results support the claim that physically constrained deep learning models are intrinsically more robust to input perturbations than purely data-driven ones, a property of high operational value for flood forecasting in data-sparse or noisy environments.
 
-> **[TODO — pending Experiment 3 sensitivity results]** Elasticity coefficients for the five key hyper-parameters ($\lambda_{\text{mass}}$, $K$, $H$, $\lambda_{\text{ext}}$, $L$) will be inserted here once `results/experiment3_sensitivity_results.json` is finalised.
+The sensitivity analysis (Section 3.4, Tables 4–5) further shows that PINN-UHConv is robust to hyper-parameter choices: four of the five key hyper-parameters exhibit low elasticity ($\max|E| \le 0.123$), and only the look-back length enters the medium band ($|E| = 0.211$ when shortened from 180 to 90 days). The default configuration achieves within $3.4\,\%$ of the per-parameter optimum for four of the five parameters, and two actionable revisions emerge from the sweep — raising $\lambda_{\text{mass}}$ from $0.01$ to $1.0$ ($+9.2\,\%$ NSE, $87\,\%$ lower high-flow bias) and lowering $\lambda_{\text{ext}}$ toward $0$ ($+3.4\,\%$ NSE, $+30\,\%$ KGE) — both of which keep the model in the flat region of the response surface. This flatness is a direct consequence of the architectural inductive biases: with routing structure hard-coded into UHconv and mass balance structurally enforced, the remaining hyper-parameters govern only the residual fit and are individually less critical — a desirable property for operational deployment, where extensive hyper-parameter search is rarely feasible.
 
 The broader implication is that *embedding differentiable physical structure inside deep learning models is a viable route to models that are simultaneously accurate, interpretable, and operationally reliable*. Unlike post-hoc physical regularisation (which can be overridden by the data-fit term) or pure conceptual models (which require per-basin calibration), PINN-UHConv's routing kernel is structurally mass-conserving by construction, so the physical guarantee holds regardless of the data fit. This makes the approach attractive for water-resource applications where physical consistency is a hard requirement, not a soft preference.
 

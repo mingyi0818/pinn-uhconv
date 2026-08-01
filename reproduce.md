@@ -158,10 +158,11 @@ Every numerical value in the paper can be traced to a specific file:
 | Table 1 (Main comparison) | `results/experiment1_baseline_comparison_results.json` → `per_model.<MODEL>.NSE_median_mean` etc. |
 | Table 2 (Statistical tests) | `results/statistics/statistical_analysis.json` → `paired_t_test` |
 | Table 3 (Ablation) | `results/experiment2_ablation_results.json` → `per_config.<CONFIG>` |
-| Table 4 (Computational performance) | `results/experiment1/train_<MODEL>_seed<SEED>.json` → `train_time_sec`, `n_params` |
-| Table 5 (Sensitivity/elasticity) | `results/experiment3_sensitivity_results.json` → `elasticity` |
-| Section 3.5 (Robustness) | `results/experiment4_robustness_results.json` |
-| Figures 1-5 | `plots/figure*.png` |
+| Tables 4–5 (Sensitivity/elasticity) | `results/experiment3_sensitivity_results.json` → `per_param.<P>.sweep`, `elasticity` |
+| Tables 6–8 (Robustness) | `results/experiment4_robustness_results.json` |
+| Table 9 (Computational performance) | `results/experiment1/train_<MODEL>_seed<SEED>.json` → `train_time_sec`, `n_params` |
+| Tables 10–11 (Case study) | `results/case_study_results.json` |
+| Figures 1–6 | `plots/figure*.png` |
 
 ## 6. Hyperparameters
 

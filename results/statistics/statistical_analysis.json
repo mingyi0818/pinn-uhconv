@@ -1907,7 +1907,327 @@
     }
   },
   "experiment3": {
-    "error": "experiment3 results not found"
+    "experiment": "experiment3_sensitivity",
+    "per_param": {
+      "lambda_mass": {
+        "base_value": 0.01,
+        "base_NSE": 0.4685969371710873,
+        "best_value": 1.0,
+        "best_NSE": 0.5115505478512339,
+        "max_abs_elasticity": 0.026049868621741655,
+        "sensitivity_level": "low",
+        "correlation": {
+          "pearson": {
+            "r": 0.951086140887425,
+            "p_value": 0.048913859112575064,
+            "n": 4
+          },
+          "spearman": {
+            "rho": 0.39999999999999997,
+            "p_value": 0.6000000000000001,
+            "n": 4
+          }
+        },
+        "sweep": [
+          {
+            "param_value": 0.0,
+            "NSE_median": 0.45639004826073126,
+            "NSE_extreme_median": 0.15711499810717733,
+            "KGE_median": 0.5127222696231364,
+            "RMSE_median": 1.673548831859165,
+            "PBIAS_median": -3.2821100236977636,
+            "FHV_median": -12.948842839393317,
+            "best_epoch": 4,
+            "train_time_sec": 1783.8805072307587,
+            "elasticity": 0.026049868621741655,
+            "sensitivity_level": "low"
+          },
+          {
+            "param_value": 0.01,
+            "NSE_median": 0.4685969371710873,
+            "NSE_extreme_median": 0.1328922036613217,
+            "KGE_median": 0.36116279633847015,
+            "RMSE_median": 1.50449572680054,
+            "PBIAS_median": -9.590593138264236,
+            "FHV_median": -21.38638036608628,
+            "best_epoch": 13,
+            "train_time_sec": 2747.3181717395782,
+            "elasticity": 0.0,
+            "sensitivity_level": "baseline"
+          },
+          {
+            "param_value": 0.1,
+            "NSE_median": 0.45311552143770983,
+            "NSE_extreme_median": 0.10009133110930357,
+            "KGE_median": 0.4787949861854711,
+            "RMSE_median": 1.509991691412382,
+            "PBIAS_median": -15.201898245905193,
+            "FHV_median": -23.69712507302126,
+            "best_epoch": 13,
+            "train_time_sec": 2557.005019903183,
+            "elasticity": -0.003670867499443117,
+            "sensitivity_level": "low"
+          },
+          {
+            "param_value": 1.0,
+            "NSE_median": 0.5115505478512339,
+            "NSE_extreme_median": 0.1493767287130059,
+            "KGE_median": 0.5385232824986979,
+            "RMSE_median": 1.39936046154981,
+            "PBIAS_median": 13.4144715558925,
+            "FHV_median": -2.675996450703056,
+            "best_epoch": 15,
+            "train_time_sec": 2495.924693107605,
+            "elasticity": 0.0009259020101908729,
+            "sensitivity_level": "low"
+          }
+        ]
+      },
+      "uh_kernel_size": {
+        "base_value": 60,
+        "base_NSE": 0.4685969371710873,
+        "best_value": 20,
+        "best_NSE": 0.4710188925214105,
+        "max_abs_elasticity": 0.028181356015682432,
+        "sensitivity_level": "low",
+        "correlation": {
+          "pearson": {
+            "r": -0.9653116300208376,
+            "p_value": 0.16817078141152467,
+            "n": 3
+          },
+          "spearman": {
+            "rho": -1.0,
+            "p_value": 0.0,
+            "n": 3
+          }
+        },
+        "sweep": [
+          {
+            "param_value": 20,
+            "NSE_median": 0.4710188925214105,
+            "NSE_extreme_median": 0.17125916149152898,
+            "KGE_median": 0.44198010529960907,
+            "RMSE_median": 1.72008797655884,
+            "PBIAS_median": 1.8509623408210771,
+            "FHV_median": -6.7312930070040595,
+            "best_epoch": 4,
+            "train_time_sec": 1540.9859926700592,
+            "elasticity": -0.00775278850495452,
+            "sensitivity_level": "low"
+          },
+          {
+            "param_value": 60,
+            "NSE_median": 0.4685969371710873,
+            "NSE_extreme_median": 0.1328922036613217,
+            "KGE_median": 0.36116279633847015,
+            "RMSE_median": 1.50449572680054,
+            "PBIAS_median": -9.590593138264236,
+            "FHV_median": -21.38638036608628,
+            "best_epoch": 13,
+            "train_time_sec": 2550.6054363250732,
+            "elasticity": 0.0,
+            "sensitivity_level": "baseline"
+          },
+          {
+            "param_value": 120,
+            "NSE_median": 0.45539123977499696,
+            "NSE_extreme_median": 0.029509805697746083,
+            "KGE_median": 0.42820461680316213,
+            "RMSE_median": 1.5658208103544267,
+            "PBIAS_median": -0.48249190287817006,
+            "FHV_median": -15.40920104437166,
+            "best_epoch": 13,
+            "train_time_sec": 2530.474860906601,
+            "elasticity": -0.028181356015682432,
+            "sensitivity_level": "low"
+          }
+        ]
+      },
+      "hidden_size": {
+        "base_value": 128,
+        "base_NSE": 0.4685969371710873,
+        "best_value": 128,
+        "best_NSE": 0.4685969371710873,
+        "max_abs_elasticity": 0.12294239249915466,
+        "sensitivity_level": "low",
+        "correlation": {
+          "pearson": {
+            "r": -0.8598397710621059,
+            "p_value": 0.3411266982894707,
+            "n": 3
+          },
+          "spearman": {
+            "rho": -0.5,
+            "p_value": 0.6666666666666666,
+            "n": 3
+          }
+        },
+        "sweep": [
+          {
+            "param_value": 64,
+            "NSE_median": 0.45639364522562864,
+            "NSE_extreme_median": 0.010780474625914027,
+            "KGE_median": 0.34595809895227503,
+            "RMSE_median": 1.5451707816815878,
+            "PBIAS_median": -6.36135277821402,
+            "FHV_median": -26.404286370752228,
+            "best_epoch": 4,
+            "train_time_sec": 1483.7568237781525,
+            "elasticity": 0.052084385180610974,
+            "sensitivity_level": "low"
+          },
+          {
+            "param_value": 128,
+            "NSE_median": 0.4685969371710873,
+            "NSE_extreme_median": 0.1328922036613217,
+            "KGE_median": 0.36116279633847015,
+            "RMSE_median": 1.50449572680054,
+            "PBIAS_median": -9.590593138264236,
+            "FHV_median": -21.38638036608628,
+            "best_epoch": 13,
+            "train_time_sec": 2519.2149045467377,
+            "elasticity": 0.0,
+            "sensitivity_level": "baseline"
+          },
+          {
+            "param_value": 256,
+            "NSE_median": 0.41098650736807385,
+            "NSE_extreme_median": 0.09277075316411898,
+            "KGE_median": 0.3551222070898068,
+            "RMSE_median": 1.5118527683550587,
+            "PBIAS_median": 19.301011702486026,
+            "FHV_median": -8.815084236326232,
+            "best_epoch": 12,
+            "train_time_sec": 3396.1771154403687,
+            "elasticity": -0.12294239249915466,
+            "sensitivity_level": "low"
+          }
+        ]
+      },
+      "lambda_extreme": {
+        "base_value": 0.5,
+        "base_NSE": 0.4685969371710873,
+        "best_value": 0.0,
+        "best_NSE": 0.48429396310133543,
+        "max_abs_elasticity": 0.0334979261495638,
+        "sensitivity_level": "low",
+        "correlation": {
+          "pearson": {
+            "r": -0.6649940896777647,
+            "p_value": 0.5368680892090928,
+            "n": 3
+          },
+          "spearman": {
+            "rho": -0.5,
+            "p_value": 0.6666666666666666,
+            "n": 3
+          }
+        },
+        "sweep": [
+          {
+            "param_value": 0.0,
+            "NSE_median": 0.48429396310133543,
+            "NSE_extreme_median": 0.13446280195468097,
+            "KGE_median": 0.46926887745785695,
+            "RMSE_median": 1.4454194554805038,
+            "PBIAS_median": 4.150691832562027,
+            "FHV_median": -16.009929190336504,
+            "best_epoch": 12,
+            "train_time_sec": 3295.9872477054596,
+            "elasticity": -0.0334979261495638,
+            "sensitivity_level": "low"
+          },
+          {
+            "param_value": 0.5,
+            "NSE_median": 0.4685969371710873,
+            "NSE_extreme_median": 0.1328922036613217,
+            "KGE_median": 0.36116279633847015,
+            "RMSE_median": 1.50449572680054,
+            "PBIAS_median": -9.590593138264236,
+            "FHV_median": -21.38638036608628,
+            "best_epoch": 13,
+            "train_time_sec": 3330.626445055008,
+            "elasticity": 0.0,
+            "sensitivity_level": "baseline"
+          },
+          {
+            "param_value": 2.0,
+            "NSE_median": 0.4692829898161325,
+            "NSE_extreme_median": 0.10744484849226155,
+            "KGE_median": 0.3187401683379848,
+            "RMSE_median": 1.5145366389499095,
+            "PBIAS_median": -11.040827888390924,
+            "FHV_median": -17.942664700612504,
+            "best_epoch": 8,
+            "train_time_sec": 2849.0510761737823,
+            "elasticity": 0.00048801900310196635,
+            "sensitivity_level": "low"
+          }
+        ]
+      },
+      "seq_length": {
+        "base_value": 180,
+        "base_NSE": 0.4685969371710873,
+        "best_value": 180,
+        "best_NSE": 0.4685969371710873,
+        "max_abs_elasticity": 0.21063139606468764,
+        "sensitivity_level": "medium",
+        "correlation": {
+          "pearson": {
+            "r": 0.64432394297409,
+            "p_value": 0.5542777117358094,
+            "n": 3
+          },
+          "spearman": {
+            "rho": 0.5,
+            "p_value": 0.6666666666666666,
+            "n": 3
+          }
+        },
+        "sweep": [
+          {
+            "param_value": 90,
+            "NSE_median": 0.4192463225839389,
+            "NSE_extreme_median": 0.11851300545076926,
+            "KGE_median": 0.3573021158481018,
+            "RMSE_median": 1.5094925042054377,
+            "PBIAS_median": -1.8909828127181063,
+            "FHV_median": -17.7370051306299,
+            "best_epoch": 8,
+            "train_time_sec": 2142.4991850852966,
+            "elasticity": 0.21063139606468764,
+            "sensitivity_level": "medium"
+          },
+          {
+            "param_value": 180,
+            "NSE_median": 0.4685969371710873,
+            "NSE_extreme_median": 0.1328922036613217,
+            "KGE_median": 0.36116279633847015,
+            "RMSE_median": 1.50449572680054,
+            "PBIAS_median": -9.590593138264236,
+            "FHV_median": -21.38638036608628,
+            "best_epoch": 13,
+            "train_time_sec": 3152.6239054203033,
+            "elasticity": 0.0,
+            "sensitivity_level": "baseline"
+          },
+          {
+            "param_value": 365,
+            "NSE_median": 0.4606661175531359,
+            "NSE_extreme_median": 0.043041112515211366,
+            "KGE_median": 0.5312516244159969,
+            "RMSE_median": 1.5048030245705584,
+            "PBIAS_median": 11.943209068583972,
+            "FHV_median": 4.170779954105921,
+            "best_epoch": 11,
+            "train_time_sec": 3287.7251682281494,
+            "elasticity": -0.016467186114580503,
+            "sensitivity_level": "low"
+          }
+        ]
+      }
+    }
   },
   "experiment4": {
     "experiment": "experiment4_robustness",
