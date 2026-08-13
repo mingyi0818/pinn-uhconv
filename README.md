@@ -2,16 +2,9 @@
 
 A physics-informed deep learning model that embeds a **differentiable unit-hydrograph convolution (UHconv)** inside an LSTM encoder for rainfall–runoff prediction. UHconv parameterises a Gamma-distributed routing kernel whose shape parameters (α, β) are predicted from catchment attributes, ensuring basin-specific, learnable, and mass-conserving flood routing.
 
-## Key Results (CAMELS-US, 100 basins, 5 seeds)
+## Results
 
-| Metric | PINN-UHConv | Best Baseline (UH-LSTM) | LSTM |
-|--------|------------|------------------------|------|
-| NSE ↑ | 0.506 ± 0.037 | **0.519** ± 0.064 | 0.478 ± 0.050 |
-| Pearson r ↑ | **0.774** | 0.763 | 0.737 |
-| β_NSE →1 | **1.022** | 1.108 | 1.068 |
-| Cross-seed std ↓ | **0.037** | 0.064 | 0.050 |
-
-PINN-UHConv achieves the **highest correlation**, **best volume calibration**, and **greatest stability** among all models, with NSE competitive to the strongest baseline.
+Running the commands above regenerates all metrics, the ablation study, and the manuscript figures locally under `results/` (which is **not** stored in this repository). Numerical results are intentionally **not** pre-published here to avoid disclosing unpublished findings; reviewers reproduce them by running the code.
 
 ## Quick Start
 
